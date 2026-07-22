@@ -1,0 +1,133 @@
+[gd_scene format=3 uid="uid://ot0am4xn1t5t"]
+
+[ext_resource type="PackedScene" uid="uid://hg8byavprqgq" path="res://Levels Assets/bridge/bridge blend.glb" id="1_25uw4"]
+[ext_resource type="Texture2D" uid="uid://lm0mrau5byf" path="res://Levels Assets/bridge/bridge blend_Stylized_MetalGrid_01_basecolor.jpg" id="2_0n2te"]
+[ext_resource type="Texture2D" uid="uid://b4j5w70dohj5e" path="res://Levels Assets/bridge/bridge blend_metal02_basecolor.jpg" id="2_6xinw"]
+[ext_resource type="Texture2D" uid="uid://upbaws0mkgus" path="res://Levels Assets/bridge/bridge blend_metal_sheet_color.png" id="4_qeo2h"]
+[ext_resource type="Texture2D" uid="uid://cgs5o8iqep7xv" path="res://Levels Assets/bridge/bridge blend_Stylized_MetalGrid_01_normalogl.jpg" id="5_6xinw"]
+[ext_resource type="Material" uid="uid://d0hyi5n6ng25w" path="res://demo/assets/materials/M_rock23_black_tp.tres" id="5_d2v1s"]
+[ext_resource type="Texture2D" uid="uid://che28fes16iq6" path="res://Levels Assets/bridge/bridge blend_OldRoad_basecolor.jpg" id="6_ysvkp"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6xinw"]
+cull_mode = 2
+albedo_texture = ExtResource("2_6xinw")
+metallic = 0.88
+roughness = 0.29
+normal_enabled = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_366de"]
+cull_mode = 2
+albedo_texture = ExtResource("2_0n2te")
+metallic = 0.98
+roughness = 0.46
+normal_enabled = true
+normal_scale = 6.19
+normal_texture = ExtResource("5_6xinw")
+uv1_scale = Vector3(9.275, 9.275, 9.275)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kj430"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+cull_mode = 2
+albedo_texture = ExtResource("4_qeo2h")
+metallic = 1.0
+roughness = 0.0
+normal_enabled = true
+uv1_scale = Vector3(10.885, 10.885, 10.885)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_imex3"]
+albedo_texture = ExtResource("6_ysvkp")
+
+[node name="bridge blend" unique_id=943331221 instance=ExtResource("1_25uw4")]
+
+[node name="Cube_003" parent="." index="0" unique_id=223631315]
+transform = Transform3D(0.123, 1.0753002e-08, 0, -1.0753002e-08, 0.123, 0, 0, 0, 0.124, -0.004, -0.224, 1.1440234)
+surface_material_override/0 = SubResource("StandardMaterial3D_6xinw")
+surface_material_override/1 = SubResource("StandardMaterial3D_6xinw")
+surface_material_override/2 = SubResource("StandardMaterial3D_6xinw")
+surface_material_override/3 = SubResource("StandardMaterial3D_6xinw")
+surface_material_override/4 = SubResource("StandardMaterial3D_366de")
+surface_material_override/5 = SubResource("StandardMaterial3D_kj430")
+
+[node name="Cube" parent="." index="1" unique_id=2007258783]
+surface_material_override/1 = SubResource("StandardMaterial3D_6xinw")
+surface_material_override/2 = ExtResource("5_d2v1s")
+
+[node name="Cube_001" parent="." index="3" unique_id=1065951606]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_011" parent="." index="7" unique_id=32812447]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_012" parent="." index="8" unique_id=1558134046]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_013" parent="." index="9" unique_id=1621698627]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_016" parent="." index="10" unique_id=1776349378]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_017" parent="." index="11" unique_id=1101249741]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_018" parent="." index="12" unique_id=415612524]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_019" parent="." index="13" unique_id=1354073784]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_020" parent="." index="14" unique_id=718923206]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_021" parent="." index="15" unique_id=2129307381]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_022" parent="." index="16" unique_id=1893047409]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_032" parent="." index="17" unique_id=1230270657]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_014" parent="." index="71" unique_id=1574507873]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_065" parent="." index="75" unique_id=214059714]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_066" parent="." index="76" unique_id=1814878363]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_067" parent="." index="77" unique_id=1594464061]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_068" parent="." index="78" unique_id=888700125]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_069" parent="." index="79" unique_id=688231822]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_070" parent="." index="80" unique_id=689609165]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_071" parent="." index="81" unique_id=1695817672]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_072" parent="." index="82" unique_id=1332404526]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_073" parent="." index="83" unique_id=1617669029]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_074" parent="." index="84" unique_id=463672448]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_075" parent="." index="85" unique_id=1196445110]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_076" parent="." index="86" unique_id=1207969931]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")
+
+[node name="Cube_077" parent="." index="87" unique_id=1326109371]
+surface_material_override/0 = SubResource("StandardMaterial3D_imex3")

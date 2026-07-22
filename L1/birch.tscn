@@ -1,0 +1,22 @@
+[gd_scene load_steps=6 format=3 uid="uid://dsq8ui07vgm45"]
+
+[ext_resource type="PackedScene" uid="uid://cc50vwqlnl3kh" path="res://enviornment/Windows 12 Theme for Windows 11 by VIN STAR/source/birch/birch/birch.fbx" id="1_812rt"]
+[ext_resource type="Texture2D" uid="uid://bl0ulj3pytq6y" path="res://enviornment/Windows 12 Theme for Windows 11 by VIN STAR/source/birch/birch/bark11.png" id="2_ivxqi"]
+[ext_resource type="Texture2D" uid="uid://cx3obnjdj8s2x" path="res://enviornment/Windows 12 Theme for Windows 11 by VIN STAR/source/birch/birch/birch leaf.png" id="3_4fnph"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_a4liw"]
+albedo_texture = ExtResource("2_ivxqi")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l1i3o"]
+transparency = 1
+cull_mode = 2
+albedo_color = Color(0.82890546, 0.9535101, 0.6393433, 1)
+albedo_texture = ExtResource("3_4fnph")
+
+[node name="birch" instance=ExtResource("1_812rt")]
+
+[node name="bark11_0" parent="." index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_a4liw")
+
+[node name="birch leaf_1" parent="bark11_0" index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_l1i3o")

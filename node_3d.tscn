@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://brh4b22htxa85"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_4xowi"]
+
+[sub_resource type="Shader" id="Shader_4xowi"]
+code = "shader_type spatial;
+render_mode blend_mix, depth_draw_never, cull_disabled, unshaded;
+
+// Noise textures — assign these in the Material Inspector
+uniform sampler3D noise_tex : filter_linear_mipmap, repeat_enable;
+uniform sampler3D detail_tex : filter_linear_mipmap, repeat_enable;
+
+// Cloud controls
+uniform float density_threshold : hint_range(0.0, 1.0) = 0.42;
+uniform float density_multiplier : hint_range(0.0, 8.0) = 3.5;
+uniform float cloud_speed : hint_range(0.0, 0.5) = 0.04;
+uniform int march_steps : hint_range(4, 32) = 16;
+uniform float step_size : hint_range(0.1, 2.0) = 0.6;
+
+// Lighting
+uniform vec3 sun_direction = vec3(0.3, -1.0, 0.5);
+uniform vec4 cloud_color : source_color = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 shadow_color : source_color = vec4(0.55, 0.6, 0.7, 1.0);
+uniform float light_absorption : hint_range(0.0, 2.0) = 0.75;
+
+varying vec3 world_pos;
+varying vec3 world_cam;
+
+void vertex() {
+    world_pos = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+    world_cam = (INV_VIEW_MATRIX * vec4(0.0, 0.0, 0.0, 1.0)).xyz;
+}
+
+float sample_density(vec3 pos) {
+    vec3 uv = pos * 0.018;
+    uv.x += TIME * cloud_speed;
+    uv.z += TIME * cloud_speed * 0.4;
+
+    float base = texture(noise_tex, uv).r;
+    float detail = texture(detail_tex, uv * 3.5).r * 0.25;
+    float density = base - detail;
+
+    return max(0.0, density - density_threshold) * density_multiplier;
+}
+
+float light_march(vec3 pos) {
+    vec3 step = normalize(-sun_direction) * step_size;
+    float transmittance = 1.0;
+    for (int i = 0; i < 6; i++) {
+        pos += step;
+        float d = sample_density(pos);
+        transmittance *= exp(-d * light_absorption);
+    }
+    return transmittance;
+}
+
+void fragment() {
+    vec3 ray_dir = normalize(world_pos - world_cam);
+    vec3 ray_pos = world_cam;
+
+    // March through the cloud volume
+    float transmittance = 1.0;
+    vec3 light_energy = vec3(0.0);
+    vec3 step = ray_dir * step_size;
+
+    for (int i = 0; i < march_steps; i++) {
+        ray_pos += step;
+        float density = sample_density(ray_pos);
+
+        if (density > 0.0) {
+            float light = light_march(ray_pos);
+            vec3 col = mix(shadow_color.rgb, cloud_color.rgb, light);
+            light_energy += col * density * transmittance;
+            transmittance *= exp(-density * 0.5);
+
+            if (transmittance < 0.01) break;
+        }
+    }
+
+    ALBEDO = light_energy;
+    ALPHA = 1.0 - transmittance;
+}"
+
+[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_4xowi"]
+
+[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_a202f"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_noarx"]
+render_priority = 0
+shader = SubResource("Shader_4xowi")
+shader_parameter/noise_tex = SubResource("NoiseTexture3D_a202f")
+shader_parameter/detail_tex = SubResource("NoiseTexture3D_4xowi")
+shader_parameter/density_threshold = 0.402000019095
+shader_parameter/density_multiplier = 3.50000016625
+shader_parameter/cloud_speed = 0.04
+shader_parameter/march_steps = 16
+shader_parameter/step_size = 2.0
+shader_parameter/sun_direction = Vector3(0.3, -1, 0.5)
+shader_parameter/cloud_color = Color(1, 1, 1, 1)
+shader_parameter/shadow_color = Color(0.55, 0.6, 0.7, 1)
+shader_parameter/light_absorption = 2.0
+
+[node name="Node3D" type="Node3D" unique_id=322292086]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=260126316]
+transform = Transform3D(83.836586, 0, 0, 0, -0.013427692, 0, 0, 0, 38.436962, 0, 0, 0)
+mesh = SubResource("BoxMesh_4xowi")
+surface_material_override/0 = SubResource("ShaderMaterial_noarx")

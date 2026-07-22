@@ -1,0 +1,46 @@
+[gd_resource type="ArrayMesh" load_steps=4 format=4 uid="uid://run7abxpp6uv"]
+
+[ext_resource type="Texture2D" uid="uid://7v2c5i212sqj" path="res://terrain/grass (1)/T_Grass_Base_D2.png" id="1_0ifrx"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6ek8i"]
+transparency = 4
+cull_mode = 2
+vertex_color_use_as_albedo = true
+albedo_color = Color(0.68070316, 0.7507709, 0.46027327, 1)
+albedo_texture = ExtResource("1_0ifrx")
+backlight_enabled = true
+backlight = Color(0.5, 0.5, 0.5, 1)
+distance_fade_mode = 1
+distance_fade_min_distance = 128.0
+distance_fade_max_distance = 96.0
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_6mmx7"]
+_surfaces = [{
+"aabb": AABB(-1, 0, -1, 2, 1e-05, 2),
+"format": 34896613377,
+"index_count": 48,
+"index_data": PackedByteArray("DAABAAMADAAFAAEAAgAMAAMAAgADAAQAAAAMAAIADQAFAAwAAAANAAwADQAHAAUABgANAAAADgAHAA0ABgAOAA0ACAAOAAYADgAKAAcACAAJAA4ACQAKAA4ACQALAAoA"),
+"lods": [1e-10, PackedByteArray("AAABAAIAAgABAAMAAgADAAQAAAAFAAEABgAFAAAABgAHAAUACAAHAAYACAAJAAcACQAKAAcACQALAAoA")],
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 15,
+"vertex_data": PackedByteArray("VVUAAP//AAD//wAAAAAAAKmqAAD//wAA//8AAP9/AAD//wAA//8AAKmqAAAAAAAAqioAAP//AABVVQAAAAAAAAAAAAD//wAAAAAAAP9/AACqKgAAAAAAAAAAAAAAAAAAqaoAAP9/AABVVQAA/38AAKoqAAD/fwAA")
+}]
+blend_shape_mode = 0
+
+[resource]
+resource_name = "grass_Plane"
+_surfaces = [{
+"aabb": AABB(-1, 0, -1, 2, 1e-05, 2),
+"attribute_data": PackedByteArray("V1X4//j/BgCnqvj/+P//f/j/+P+nqgYArir4/1dVBgAGAPj/BgD/f64qBgAGAAYAp6r/f1dV/3+uKv9/"),
+"format": 34896613399,
+"index_count": 48,
+"index_data": PackedByteArray("DAABAAMADAAFAAEAAgAMAAMAAgADAAQAAAAMAAIADQAFAAwAAAANAAwADQAHAAUABgANAAAADgAHAA0ABgAOAA0ACAAOAAYADgAKAAcACAAJAA4ACQAKAA4ACQALAAoA"),
+"lods": [1e-10, PackedByteArray("AAABAAIAAgABAAMAAgADAAQAAAAFAAEABgAFAAAABgAHAAUACAAHAAYACAAJAAcACQAKAAcACQALAAoA")],
+"material": SubResource("StandardMaterial3D_6ek8i"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 15,
+"vertex_data": PackedByteArray("VVUAAP///7///wAAAAD/v6mqAAD///+///8AAP9//7///wAA////v6mqAAAAAP+/qioAAP///79VVQAAAAD/vwAAAAD///+/AAAAAP9//7+qKgAAAAD/vwAAAAAAAP+/qaoAAP9//79VVQAA/3//v6oqAAD/f/+//v//f////3/+//9//v//f////3////9//v//f/7//3////9//v//f/7//3////9/////f/7//3/+//9/")
+}]
+shadow_mesh = SubResource("ArrayMesh_6mmx7")

@@ -1,0 +1,94 @@
+[gd_scene load_steps=4 format=3 uid="uid://bryqof2d8whlk"]
+
+[ext_resource type="ArrayMesh" uid="uid://cvdt0ywr8coa" path="res://house/house assets/mechuka realistic assets 1 .mtl.obj" id="1_cxq3g"]
+[ext_resource type="Texture2D" uid="uid://se6as5mbkd7v" path="res://house/house assets/mechuka realistic assets_ChatGPT Image Jan 2, 2026, 05_49_31 PM.png" id="2_gpxpg"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tve4d"]
+albedo_texture = ExtResource("2_gpxpg")
+
+[node name="Node3D" type="Node3D"]
+
+[node name="MechukaRealisticAssets1_mtl" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4999999, 0, 0, 0, 1.5000002, 0, 0, 0, 1.4999999, 0, 0, 0)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4999999, 0, 0, 0, 1.5000002, 0, 0, 0, 1.4999999, 0, 0, -12.816113)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4999999, 0, 0, 0, 1.5000002, 0, 0, 0, 1.4999999, 0, 0, 25.532915)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl5" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4999999, 0, 0, 0, 1.5000002, 0, 0, 0, 1.4999999, 0, 0, 38.328125)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl6" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.484349, 0, 0.21611978, 0, 1.5000005, 0, -0.21611978, 0, 1.484349, 0.915, -0.01, 50.81)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl7" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4398768, 0, 0.42042205, 0, 1.5000005, 0, -0.42042205, 0, 1.4398768, 3.5349545, 0, 62.976547)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl8" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4068606, 0, 0.5203297, 0, 1.5000007, 0, -0.5203297, 0, 1.4068606, 7.481, 0.025, 74.928)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl9" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4068606, 0, 0.5203297, 0, 1.5000007, 0, -0.5203297, 0, 1.4068606, 11.941, 0.025, 86.981)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl10" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4068606, 0, 0.5203297, 0, 1.5000007, 0, -0.5203297, 0, 1.4068606, 16.398085, 0.025, 99.00483)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl11" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.388865, 0, 0.5666156, 0, 1.5000006, 0, -0.5666156, 0, 1.388865, 21.028868, 0.025, 110.88167)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl12" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.388865, 0, 0.5666156, 0, 1.5000006, 0, -0.5666156, 0, 1.388865, 25.87902, 0.019, 122.77152)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl13" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.388865, 0, 0.5666156, 0, 1.5000006, 0, -0.5666156, 0, 1.388865, 30.705996, 0.025, 134.56308)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl14" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.388865, 0, 0.5666156, 0, 1.5000006, 0, -0.5666156, 0, 1.388865, 35.55615, 0.019, 146.45294)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl15" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4379838, 0, 0.42685115, 0, 1.5000008, 0, -0.42685115, 0, 1.4379838, 39.63818, 0.025, 158.12798)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl16" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4379838, 0, 0.42685115, 0, 1.5000008, 0, -0.42685115, 0, 1.4379838, 43.29183, 0.019, 170.43828)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl17" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4379838, 0, 0.42685115, 0, 1.5000008, 0, -0.42685115, 0, 1.4379838, 46.807102, 0.019, 182.30138)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")
+
+[node name="MechukaRealisticAssets1_mtl4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.4999999, 0, 0, 0, 1.5000002, 0, 0, 0, 1.4999999, 0, 0, 12.716802)
+mesh = ExtResource("1_cxq3g")
+surface_material_override/0 = SubResource("StandardMaterial3D_tve4d")

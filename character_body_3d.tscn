@@ -1,0 +1,86 @@
+[gd_scene format=3 uid="uid://05nqytsrmfnv"]
+
+[ext_resource type="Script" uid="uid://dx5ipmuwlnfs7" path="res://player.gd" id="1_iwpo4"]
+
+[sub_resource type="GDScript" id="GDScript_c7tqt"]
+resource_name = "footstep_manager.gd"
+script/source = "extends AudioStreamPlayer3D
+
+# Drop footstep AudioStream resources in the Inspector
+@export var walk_sounds   : Array[AudioStream] = []
+@export var sprint_sounds : Array[AudioStream] = []
+@export var land_sounds   : Array[AudioStream] = []
+
+@export var walk_interval   : float = 0.5
+@export var sprint_interval : float = 0.3
+
+var _timer    : float = 0.0
+var _was_on_floor : bool = true
+
+func _physics_process(delta: float) -> void:
+	var player : CharacterBody3D = get_parent()
+	var speed   := Vector2(player.velocity.x, player.velocity.z).length()
+	var on_floor := player.is_on_floor()
+
+	# Landing thud
+	if on_floor and not _was_on_floor and not land_sounds.is_empty():
+		_play(land_sounds)
+	_was_on_floor = on_floor
+
+	if not on_floor or speed < 0.5:
+		_timer = 0.0
+		return
+
+	var interval := sprint_interval if speed > 6.0 else walk_interval
+	_timer += delta
+	if _timer >= interval:
+		_timer = 0.0
+		var pool := sprint_sounds if speed > 6.0 else walk_sounds
+		if not pool.is_empty():
+			_play(pool)
+
+func _play(pool: Array[AudioStream]) -> void:
+	stream = pool[randi() % pool.size()]
+	pitch_scale = randf_range(0.9, 1.1)
+	play()
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_fb3t6"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_vd578"]
+radius = 0.4
+height = 0.9
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_iwpo4"]
+radius = 0.4
+height = 1.8
+
+[sub_resource type="GDScript" id="GDScript_bu0v1"]
+
+[node name="CharacterBody3D" type="CharacterBody3D" unique_id=1975497826]
+script = ExtResource("1_iwpo4")
+
+[node name="Node3D" type="Node3D" parent="." unique_id=1001209973]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Node3D" unique_id=1408083215]
+current = true
+
+[node name="RayCast3D" type="RayCast3D" parent="." unique_id=711866502]
+target_position = Vector3(0, 1, 0)
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="." unique_id=516370895]
+script = SubResource("GDScript_c7tqt")
+
+[node name="StandingShape" type="CollisionShape3D" parent="." unique_id=2129238393]
+shape = SubResource("CapsuleShape3D_fb3t6")
+
+[node name="CrouchShape2" type="CollisionShape3D" parent="." unique_id=1199173203]
+visible = false
+shape = SubResource("CapsuleShape3D_vd578")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=560370387]
+shape = SubResource("CapsuleShape3D_iwpo4")
+script = SubResource("GDScript_bu0v1")

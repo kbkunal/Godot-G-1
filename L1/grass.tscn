@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://o0nory1q4o2n"]
+
+[ext_resource type="ArrayMesh" uid="uid://dtj2nhqwa3ura" path="res://enviornment/grass/source/trawa01.obj" id="1_383kh"]
+[ext_resource type="Texture2D" uid="uid://bfyfcqxbesbur" path="res://enviornment/grass/textures/grass02_albedo2.png" id="2_0oqnw"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1vawq"]
+transparency = 4
+cull_mode = 2
+albedo_texture = ExtResource("2_0oqnw")
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Trawa01" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_383kh")
+surface_material_override/0 = SubResource("StandardMaterial3D_1vawq")
+surface_material_override/1 = SubResource("StandardMaterial3D_1vawq")

@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://c30cjo3f4sbk3"]
+
+[ext_resource type="PackedScene" uid="uid://cj6ah5uf4otlh" path="res://assets/Marina_1276_Textures/uploads_files_2460380_Marina_1276.fbx" id="1_kf0ab"]
+[ext_resource type="Texture2D" uid="uid://dyj4546a0t2ob" path="res://assets/Marina_1276_Textures/Marina_1276_DIFF.jpg" id="2_cs84l"]
+[ext_resource type="Texture2D" uid="uid://bd4sst16otx0m" path="res://assets/Marina_1276_Textures/Marina_1276_NORM.png" id="3_31jej"]
+[ext_resource type="Texture2D" uid="uid://tk5e1yejqmb1" path="res://assets/Marina_1276_Textures/Marina_1276_REFL.jpg" id="4_8d683"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tvp1y"]
+cull_mode = 2
+albedo_texture = ExtResource("2_cs84l")
+roughness_texture = ExtResource("4_8d683")
+normal_enabled = true
+normal_texture = ExtResource("3_31jej")
+
+[node name="uploads_files_2460380_Marina_1276" unique_id=627964475 instance=ExtResource("1_kf0ab")]
+
+[node name="Marina_1276_COR" parent="." index="0" unique_id=1199865373]
+surface_material_override/0 = SubResource("StandardMaterial3D_tvp1y")

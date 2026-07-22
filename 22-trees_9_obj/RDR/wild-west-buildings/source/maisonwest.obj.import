@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bs86rf18q7yic"
+path="res://.godot/imported/maisonwest.obj-c7782f6a2750adc65dd806b5a584a95e.mesh"
+
+[deps]
+
+files=["res://.godot/imported/maisonwest.obj-c7782f6a2750adc65dd806b5a584a95e.mesh"]
+
+source_file="res://22-trees_9_obj/RDR/wild-west-buildings/source/maisonwest.obj"
+dest_files=["res://.godot/imported/maisonwest.obj-c7782f6a2750adc65dd806b5a584a95e.mesh", "res://.godot/imported/maisonwest.obj-c7782f6a2750adc65dd806b5a584a95e.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

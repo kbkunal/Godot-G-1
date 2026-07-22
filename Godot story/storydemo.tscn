@@ -1,0 +1,146 @@
+[gd_scene load_steps=25 format=3 uid="uid://cir24xvwjww5e"]
+
+[ext_resource type="Script" uid="uid://bjua7usfr8uk3" path="res://Godot story/screipts/storysystem/ActorRegistry.gd" id="1_3tedt"]
+[ext_resource type="Script" uid="uid://bdf2gyuxn7a" path="res://Godot story/player.gd" id="2_8wjou"]
+[ext_resource type="Script" uid="uid://cyku5hmre82cq" path="res://Godot story/screipts/storysystem/StoryNode.gd" id="2_t2u18"]
+[ext_resource type="Script" uid="uid://suc0klvfkm3a" path="res://Godot story/screipts/storysystem/StoryAction.gd" id="3_5qm6g"]
+[ext_resource type="Script" uid="uid://bjvo5bdysq8di" path="res://Godot story/screipts/storysystem/StoryGraph.gd" id="3_m7e50"]
+[ext_resource type="Script" uid="uid://c2l0ymqfcmehb" path="res://Godot story/screipts/storysystem/StorySystem.gd" id="4_5qm6g"]
+[ext_resource type="Script" uid="uid://kp0r3vmlfrgs" path="res://Godot story/screipts/actions/MoveAction.gd" id="4_8wjou"]
+[ext_resource type="Script" uid="uid://5inbakaiw1ph" path="res://Godot story/screipts/actions/FollowSplineAction.gd" id="6_wi5rm"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_8wjou"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_wi5rm"]
+sky_material = SubResource("ProceduralSkyMaterial_8wjou")
+
+[sub_resource type="Environment" id="Environment_liou7"]
+background_mode = 2
+sky = SubResource("Sky_wi5rm")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_07bd7"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_5qm6g"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8wjou"]
+albedo_color = Color(0.3803051, 0.6053531, 0.6991729, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_wi5rm"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_liou7"]
+albedo_color = Color(0.6181291, 0.44390666, 0.29838073, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_k3cc3"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u83kx"]
+albedo_color = Color(0.48410404, 0.50250006, 0.4980176, 1)
+
+[sub_resource type="Resource" id="Resource_wi5rm"]
+script = ExtResource("4_8wjou")
+actor_id = "player"
+target = NodePath("../MoveTarget_1")
+metadata/_custom_type_script = "uid://kp0r3vmlfrgs"
+
+[sub_resource type="Resource" id="Resource_iulsh"]
+script = ExtResource("4_8wjou")
+actor_id = "guard"
+target = NodePath("../MoveTarget_1")
+metadata/_custom_type_script = "uid://kp0r3vmlfrgs"
+
+[sub_resource type="Resource" id="Resource_liou7"]
+script = ExtResource("6_wi5rm")
+actor_id = "dog"
+path = NodePath("../NPC_Path_1")
+metadata/_custom_type_script = "uid://5inbakaiw1ph"
+
+[sub_resource type="Curve3D" id="Curve3D_vnqcr"]
+resource_local_to_scene = true
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0.013799906, 0, 4.250433, 0, 0, 0, 0, 0, 0, 5.79772, 0, 4.2072706, 0, 0, 0, 0, 0, 0, 10.84786, 0, -3.432686, 0, 0, 0, 0, 0, 0, 6.3588467, 0, -10.856824, 0, 0, 0, 0, 0, 0, -6.8060493, 0, -9.648244, 0, 0, 0, 0, 0, 0, -10.949755, 0, 1.358473, 0, 0, 0, 0, 0, 0, -2.4896886, 0, 8.950152),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 7
+
+[sub_resource type="BoxMesh" id="BoxMesh_wi5rm"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_liou7"]
+data = PackedVector3Array(-0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5)
+
+[node name="Node3D" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_liou7")
+
+[node name="ActorRegistry" type="Node" parent="."]
+script = ExtResource("1_3tedt")
+metadata/_custom_type_script = "uid://bjua7usfr8uk3"
+
+[node name="Player" type="CharacterBody3D" parent="."]
+script = ExtResource("2_8wjou")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
+shape = SubResource("CapsuleShape3D_07bd7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
+mesh = SubResource("CapsuleMesh_5qm6g")
+surface_material_override/0 = SubResource("StandardMaterial3D_8wjou")
+
+[node name="NPC_Guard" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5.5690594)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_Guard"]
+shape = SubResource("CapsuleShape3D_07bd7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NPC_Guard"]
+mesh = SubResource("CapsuleMesh_wi5rm")
+surface_material_override/0 = SubResource("StandardMaterial3D_liou7")
+
+[node name="NPC_Dog" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.652925, 0, 4.4136753)
+motion_mode = 1
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NPC_Dog"]
+shape = SubResource("CapsuleShape3D_07bd7")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="NPC_Dog"]
+mesh = SubResource("CapsuleMesh_k3cc3")
+surface_material_override/0 = SubResource("StandardMaterial3D_u83kx")
+
+[node name="MoveTarget_1" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.030127, 0, 0)
+
+[node name="StoryNode_Start" type="Node" parent="."]
+script = ExtResource("2_t2u18")
+actions = Array[ExtResource("3_5qm6g")]([SubResource("Resource_wi5rm"), SubResource("Resource_iulsh"), SubResource("Resource_liou7")])
+
+[node name="StoryGraph" type="Node" parent="."]
+script = ExtResource("3_m7e50")
+start_node = NodePath("../StoryNode_Start")
+
+[node name="StorySystem" type="Node" parent="."]
+script = ExtResource("4_5qm6g")
+story_graph = NodePath("../StoryGraph")
+actor_registry = NodePath("../ActorRegistry")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.997317, 0.073203385, 0, -0.073203385, 0.997317, -6.2761784, 2.5061946, 17.594372)
+
+[node name="NPC_Path_1" type="Path3D" parent="."]
+curve = SubResource("Curve3D_vnqcr")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(89.672165, 0, 0, 0, 1, 0, 0, 0, 64.59073, 0, -1.6327436, 0)
+mesh = SubResource("BoxMesh_wi5rm")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_liou7")

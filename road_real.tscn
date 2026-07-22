@@ -1,0 +1,40 @@
+[gd_scene load_steps=9 format=3 uid="uid://cbtjcl116pwtn"]
+
+[ext_resource type="PackedScene" uid="uid://dhd3k1n0qisk5" path="res://house/road/road real.glb" id="1_6rg7f"]
+[ext_resource type="Texture2D" uid="uid://cvjg6nbjjqswi" path="res://house/road/road real_ChatGPT Image Jan 3, 2026, 12_07_26 PM.png" id="2_tt27f"]
+[ext_resource type="ArrayMesh" uid="uid://byptlh2h5o8se" path="res://house/road/road emain.obj" id="3_vfykm"]
+[ext_resource type="ArrayMesh" uid="uid://der83n4yyy3a8" path="res://house/road/road 2emain.obj" id="4_nt5yg"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v1gy0"]
+albedo_color = Color(0.8304125, 0.77722824, 0.68713045, 1)
+albedo_texture = ExtResource("2_tt27f")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nahx8"]
+albedo_color = Color(0.8304125, 0.77722824, 0.68713045, 1)
+albedo_texture = ExtResource("2_tt27f")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_idqqg"]
+albedo_color = Color(0.8304125, 0.77722824, 0.68713045, 1)
+albedo_texture = ExtResource("2_tt27f")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nbvym"]
+albedo_color = Color(0.8304125, 0.77722824, 0.68713045, 1)
+albedo_texture = ExtResource("2_tt27f")
+
+[node name="road real" instance=ExtResource("1_6rg7f")]
+
+[node name="Plane_004" parent="." index="3"]
+surface_material_override/0 = SubResource("StandardMaterial3D_v1gy0")
+
+[node name="Plane_005" parent="." index="4"]
+surface_material_override/0 = SubResource("StandardMaterial3D_nahx8")
+
+[node name="RoadEmain" type="MeshInstance3D" parent="." index="10"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.623252, 0, 8.264992)
+mesh = ExtResource("3_vfykm")
+surface_material_override/0 = SubResource("StandardMaterial3D_idqqg")
+
+[node name="Road2Emain" type="MeshInstance3D" parent="." index="11"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.7670116, 0, -3.2396507)
+mesh = ExtResource("4_nt5yg")
+surface_material_override/0 = SubResource("StandardMaterial3D_nbvym")

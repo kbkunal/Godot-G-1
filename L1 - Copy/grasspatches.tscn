@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://dhqfs5hadmb6t"]
+
+[ext_resource type="PackedScene" uid="uid://cepvyci2w3exs" path="res://enviornment/grass-patches/source/grasspatches.fbx" id="1_lv0o3"]
+[ext_resource type="Texture2D" uid="uid://bv5dd4t1h5k77" path="res://enviornment/grass-patches/textures/grassAlphaMapped.png" id="2_306ke"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_st8ip"]
+transparency = 4
+cull_mode = 2
+albedo_color = Color(0.42022255, 0.91334283, 0.5332245, 1)
+albedo_texture = ExtResource("2_306ke")
+
+[node name="grasspatches" instance=ExtResource("1_lv0o3")]
+
+[node name="grasspatch1" parent="." index="0"]
+surface_material_override/0 = SubResource("StandardMaterial3D_st8ip")
+
+[node name="grasspatch2" parent="." index="1"]
+surface_material_override/0 = SubResource("StandardMaterial3D_st8ip")
+
+[node name="grasspatch3" parent="." index="2"]
+surface_material_override/0 = SubResource("StandardMaterial3D_st8ip")

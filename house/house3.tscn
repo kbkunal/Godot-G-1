@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bo0bvvi3v1b8m"]
+
+[ext_resource type="PackedScene" uid="uid://cvapxc865k0n5" path="res://house/house 1.tscn" id="1_4boja"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="Node3D" parent="." instance=ExtResource("1_4boja")]

@@ -1,0 +1,55 @@
+[gd_scene load_steps=4 format=3 uid="uid://dgcohdy28aenx"]
+
+[ext_resource type="ArrayMesh" uid="uid://bcj74vij2yjjb" path="res://enviornment/grass-04/source/meghascan grass/realistics grass scane 04.obj" id="1_rrrfn"]
+[ext_resource type="Texture2D" uid="uid://dm4w8weqw4n3u" path="res://enviornment/grass-04/source/meghascan grass/pgybehnh_2K_Albedo.jpg" id="2_oyymm"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kl1da"]
+transparency = 1
+cull_mode = 2
+albedo_texture = ExtResource("2_oyymm")
+
+[node name="Node3D" type="Node3D"]
+
+[node name="RealisticsGrassScane04" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_rrrfn")
+surface_material_override/0 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/1 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/2 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/3 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/4 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/5 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/6 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/7 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/8 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/9 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/10 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/11 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/12 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/13 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/14 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/15 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/16 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/17 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/18 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/19 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/20 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/21 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/22 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/23 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/24 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/25 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/26 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/27 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/28 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/29 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/30 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/31 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/32 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/33 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/34 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/35 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/36 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/37 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/38 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/39 = SubResource("StandardMaterial3D_kl1da")
+surface_material_override/40 = SubResource("StandardMaterial3D_kl1da")

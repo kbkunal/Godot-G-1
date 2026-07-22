@@ -1,0 +1,841 @@
+[gd_scene format=3 uid="uid://btx72uh68jhkf"]
+
+[ext_resource type="Script" uid="uid://dxmrk0ofrri1k" path="res://addons/zylann.hterrain/hterrain.gd" id="1_0m0f1"]
+[ext_resource type="Resource" uid="uid://drhib3jaqe8rq" path="res://Levels Assets/Texture/mao/data.hterrain" id="2_b0q6j"]
+[ext_resource type="Script" uid="uid://bd3ln0j6jeo8n" path="res://addons/zylann.hterrain/hterrain_texture_set.gd" id="3_mhym6"]
+[ext_resource type="Texture2D" uid="uid://qhlmnygfwmvr" path="res://slot0_albedo_bump.png" id="4_a3se8"]
+[ext_resource type="Texture2D" uid="uid://bcki563q0l5qw" path="res://slot1_albedo_bump.png" id="5_uty7l"]
+[ext_resource type="Texture2D" uid="uid://n5wqyitn3bfw" path="res://slot2_albedo_bump.png" id="6_45l4g"]
+[ext_resource type="Texture2D" uid="uid://bjjvhicxko60w" path="res://slot3_albedo_bump.png" id="7_4uo0j"]
+[ext_resource type="Texture2D" uid="uid://c4bg50vr0g64a" path="res://slot4_albedo_bump.png" id="8_vxl6d"]
+[ext_resource type="Texture2D" uid="uid://dofnrqpo14l8g" path="res://slot0_normal_roughness.png" id="9_eski5"]
+[ext_resource type="Texture2D" uid="uid://4jjs5mtlyjt2" path="res://slot1_normal_roughness.png" id="10_pdf00"]
+[ext_resource type="Texture2D" uid="uid://diunb0tirsddl" path="res://slot2_normal_roughness.png" id="11_a6gra"]
+[ext_resource type="Texture2D" uid="uid://bqybvj8x3dq4" path="res://slot3_normal_roughness.png" id="12_dwqlq"]
+[ext_resource type="Texture2D" uid="uid://6f33unufvlrv" path="res://slot4_normal_roughness.png" id="13_15c7i"]
+
+[sub_resource type="Shader" id="Shader_n1wee"]
+code = "shader_type spatial;
+
+#include \"res://addons/zylann.hterrain/shaders/include/heightmap.gdshaderinc\"
+
+// ---------------------------------------------------------------------------
+group_uniforms Terrain_Core;
+// ---------------------------------------------------------------------------
+uniform sampler2D u_terrain_heightmap;
+uniform sampler2D u_terrain_normalmap;
+uniform sampler2D u_terrain_colormap;
+uniform sampler2D u_terrain_splat_index_map;
+uniform sampler2D u_terrain_splat_weight_map;
+uniform sampler2D u_terrain_globalmap : source_color;
+uniform mat4 u_terrain_inverse_transform;
+uniform mat3 u_terrain_normal_basis;
+
+uniform sampler2DArray u_ground_albedo_bump_array : source_color;
+uniform sampler2DArray u_ground_normal_roughness_array;
+
+uniform sampler2DArray u_ground_ao_array;
+uniform bool u_use_ao_array = false;
+
+uniform float u_ground_uv_scale;
+uniform float u_globalmap_blend_start;
+uniform float u_globalmap_blend_distance;
+uniform bool u_depth_blending = true;
+
+group_uniforms Roughness;
+uniform float u_roughness_multiplier : hint_range(0.0, 4.0) = 1.0;
+uniform float u_roughness_power      : hint_range(0.1, 4.0) = 1.0;
+uniform float u_minimum_roughness    : hint_range(0.0, 1.0) = 0.02;
+
+group_uniforms Metallic_Specular;
+uniform float u_metallic  : hint_range(0.0, 1.0) = 0.0;
+uniform float u_specular  : hint_range(0.0, 1.0) = 0.5;
+
+group_uniforms Ambient_Occlusion;
+uniform float u_ao_strength : hint_range(0.0, 1.0) = 1.0;
+
+group_uniforms Normal_Mapping;
+// Global fallback / overall multiplier applied on top of every per-layer value below.
+uniform float u_normal_strength : hint_range(0.0, 4.0) = 1.0;
+
+// Per-layer normal strength, named instead of indexed. Map your splat texture
+// array slots to these in whatever order makes sense for your terrain -- e.g.
+// if grass is array index 0, tweak u_grass_normal_strength.
+// If you have more than 8 ground layers, extend get_layer_normal_strength()
+// below with more named uniforms following the same pattern.
+uniform float u_grass_normal_strength : hint_range(0.0, 4.0) = 1.0;
+uniform float u_dirt_normal_strength  : hint_range(0.0, 4.0) = 1.0;
+uniform float u_rock_normal_strength  : hint_range(0.0, 4.0) = 1.0;
+uniform float u_sand_normal_strength  : hint_range(0.0, 4.0) = 1.0;
+uniform float u_snow_normal_strength  : hint_range(0.0, 4.0) = 1.0;
+uniform float u_mud_normal_strength   : hint_range(0.0, 4.0) = 1.0;
+uniform float u_gravel_normal_strength: hint_range(0.0, 4.0) = 1.0;
+uniform float u_moss_normal_strength  : hint_range(0.0, 4.0) = 1.0;
+
+group_uniforms Height_Blend;
+uniform float u_height_blend_strength : hint_range(0.0, 1.0) = 0.2;
+
+group_uniforms Wetness;
+uniform float u_wetness : hint_range(0.0, 1.0) = 0.0;
+
+group_uniforms Macro_Variation;
+uniform sampler2D u_macro_variation_texture : source_color;
+uniform float u_macro_scale = 0.02;
+uniform float u_macro_scale2 = 0.071; // deliberately non-round multiple, avoids beat patterns
+uniform float u_macro_strength : hint_range(0.0, 1.0) = 0.0;
+uniform float u_macro_octave2_strength : hint_range(0.0, 1.0) = 0.5;
+uniform vec3 u_macro_tint = vec3(1.0);
+
+group_uniforms Triplanar_Mapping;
+uniform bool u_use_triplanar = true;
+uniform float u_triplanar_slope_threshold : hint_range(0.0, 1.0) = 0.35;
+uniform float u_triplanar_sharpness : hint_range(1.0, 16.0) = 4.0;
+
+group_uniforms Texture_Bombing;
+uniform bool u_use_texture_bombing = true;
+uniform float u_bombing_cell_size = 4.0; // in ground_uv units
+uniform float u_bombing_offset_strength : hint_range(0.0, 1.0) = 0.5;
+
+group_uniforms Distance_Detail;
+uniform sampler2D u_detail_albedo_texture : source_color;
+uniform float u_detail_scale = 8.0;
+uniform float u_detail_strength : hint_range(0.0, 1.0) = 0.0; // 0 = disabled
+uniform float u_detail_fade_distance = 30.0;
+
+group_uniforms Auto_Snow;
+uniform bool u_use_auto_snow = false;
+uniform int u_snow_layer_index = 0;
+uniform float u_snow_height_start = 40.0;
+uniform float u_snow_height_end = 60.0;
+uniform float u_snow_max_slope : hint_range(0.0, 1.0) = 0.5;
+uniform float u_auto_snow_strength : hint_range(0.0, 1.0) = 1.0;
+
+group_uniforms Auto_Rock;
+uniform bool u_use_auto_rock = false;
+uniform int u_rock_layer_index = 0;
+uniform float u_rock_slope_start : hint_range(0.0, 1.0) = 0.4;
+uniform float u_rock_slope_end : hint_range(0.0, 1.0) = 0.7;
+uniform float u_auto_rock_strength : hint_range(0.0, 1.0) = 1.0;
+
+group_uniforms Curvature;
+uniform bool u_use_curvature = false;
+uniform float u_curvature_scale = 40.0;
+uniform float u_convex_brighten : hint_range(0.0, 1.0) = 0.15;
+uniform float u_concave_darken : hint_range(0.0, 1.0) = 0.25;
+
+group_uniforms; // closes grouping -- varyings/functions below are ungrouped, as expected
+
+varying float v_hole;
+varying vec3 v_tint;
+varying vec2 v_ground_uv;
+varying vec2 v_macro_uv;
+varying vec2 v_macro_uv2;
+varying vec2 v_detail_uv;
+varying vec3 v_world_pos;
+varying float v_world_height;
+varying float v_distance_to_camera;
+
+
+vec3 unpack_normal(vec4 rgba) {
+	vec3 n = rgba.xzy * 2.0 - vec3(1.0);
+	n.z *= -1.0;
+	return n;
+}
+
+vec3 apply_normal_strength(vec3 n, float strength) {
+	n.xy *= strength;
+	n.z = sqrt(clamp(1.0 - dot(n.xy, n.xy), 0.0, 1.0));
+	return n;
+}
+
+vec3 blend_whiteout(vec3 base, vec3 detail) {
+	vec3 t = vec3(base.x + detail.x, base.y * detail.y, base.z + detail.z);
+	return normalize(t);
+}
+
+vec3 get_depth_blended_weights(vec3 splat, vec3 bumps, float dh) {
+	vec3 h = bumps + splat;
+	h *= smoothstep(0.0, 0.05, splat);
+
+	vec3 d = h + dh;
+	d.r -= max(h.g, h.b);
+	d.g -= max(h.r, h.b);
+	d.b -= max(h.g, h.r);
+
+	vec3 w = clamp(d, 0.0, 1.0);
+	return w / (w.x + w.y + w.z);
+}
+
+float hash21(vec2 p) {
+	p = fract(p * vec2(123.34, 456.21));
+	p += dot(p, p + 45.32);
+	return fract(p.x * p.y);
+}
+
+vec2 rotate_uv(vec2 uv, float angle) {
+	float s = sin(angle);
+	float c = cos(angle);
+	mat2 rot = mat2(vec2(c, -s), vec2(s, c));
+	return rot * uv;
+}
+
+vec2 apply_texture_bombing(vec2 uv, float cell_size, float offset_strength) {
+	vec2 cell_id = floor(uv / cell_size);
+	float h_angle = hash21(cell_id);
+	float h_off_x = hash21(cell_id + vec2(17.0, 31.0));
+	float h_off_y = hash21(cell_id + vec2(53.0, 91.0));
+
+	float angle = h_angle * 6.28318530718;
+	vec2 offset = (vec2(h_off_x, h_off_y) - 0.5) * cell_size * offset_strength;
+	vec2 cell_center = (cell_id + 0.5) * cell_size;
+
+	return rotate_uv(uv - cell_center + offset, angle) + cell_center;
+}
+
+// Named-uniform replacement for the old uniform array (which Godot doesn't allow
+// default values for). Extend this if-chain if you add more than 8 ground layers.
+// This costs nothing extra at runtime -- it compiles down to the same handful of
+// comparisons either way, since splat_indexes.x/y/z are per-pixel dynamic values
+// the GPU has to branch on regardless of how the lookup table is expressed.
+float get_layer_normal_strength(float splat_index) {
+	int idx = int(splat_index);
+	float layer_strength = 1.0;
+	if (idx == 0) { layer_strength = u_grass_normal_strength; }
+	else if (idx == 1) { layer_strength = u_dirt_normal_strength; }
+	else if (idx == 2) { layer_strength = u_rock_normal_strength; }
+	else if (idx == 3) { layer_strength = u_sand_normal_strength; }
+	else if (idx == 4) { layer_strength = u_snow_normal_strength; }
+	else if (idx == 5) { layer_strength = u_mud_normal_strength; }
+	else if (idx == 6) { layer_strength = u_gravel_normal_strength; }
+	else if (idx == 7) { layer_strength = u_moss_normal_strength; }
+	return layer_strength * u_normal_strength;
+}
+
+void vertex() {
+	vec4 wpos = MODEL_MATRIX * vec4(VERTEX, 1);
+	vec2 cell_coords = (u_terrain_inverse_transform * wpos).xz;
+	cell_coords += vec2(0.5);
+
+	UV = cell_coords / vec2(textureSize(u_terrain_heightmap, 0));
+
+	float h = sample_heightmap(u_terrain_heightmap, UV);
+	VERTEX.y = h;
+	wpos.y = h;
+
+	vec3 base_ground_uv = vec3(cell_coords.x, h * MODEL_MATRIX[1][1], cell_coords.y);
+	v_ground_uv = base_ground_uv.xz / u_ground_uv_scale;
+	v_macro_uv = wpos.xz * u_macro_scale;
+	v_macro_uv2 = wpos.xz * u_macro_scale2;
+	v_detail_uv = wpos.xz / u_detail_scale;
+	v_world_pos = wpos.xyz / u_ground_uv_scale;
+	v_world_height = wpos.y;
+
+	vec4 tint = texture(u_terrain_colormap, UV);
+	v_hole = tint.a;
+	v_tint = tint.rgb;
+
+	NORMAL = u_terrain_normal_basis * unpack_normal(texture(u_terrain_normalmap, UV));
+
+	v_distance_to_camera = distance(wpos.xyz, CAMERA_POSITION_WORLD);
+}
+
+vec4 sample_albedo_bump_triplanar(float layer, vec3 blend) {
+	vec4 top = texture(u_ground_albedo_bump_array, vec3(v_ground_uv, layer));
+	vec4 sx  = texture(u_ground_albedo_bump_array, vec3(v_world_pos.zy, layer));
+	vec4 sz  = texture(u_ground_albedo_bump_array, vec3(v_world_pos.xy, layer));
+	return top * blend.y + sx * blend.x + sz * blend.z;
+}
+
+vec4 sample_normal_roughness_triplanar(float layer, vec3 blend) {
+	vec4 top = texture(u_ground_normal_roughness_array, vec3(v_ground_uv, layer));
+	vec4 sx  = texture(u_ground_normal_roughness_array, vec3(v_world_pos.zy, layer));
+	vec4 sz  = texture(u_ground_normal_roughness_array, vec3(v_world_pos.xy, layer));
+	return top * blend.y + sx * blend.x + sz * blend.z;
+}
+
+void fragment() {
+	if (v_hole < 0.5) {
+		discard;
+	}
+
+	vec3 terrain_normal_world =
+		u_terrain_normal_basis * unpack_normal(texture(u_terrain_normalmap, UV));
+	terrain_normal_world = normalize(terrain_normal_world);
+	vec3 normal = terrain_normal_world;
+
+	float ao = 1.0;
+	float roughness_out = 1.0;
+
+	float globalmap_factor =
+		clamp((v_distance_to_camera - u_globalmap_blend_start) * u_globalmap_blend_distance, 0.0, 1.0);
+	globalmap_factor *= globalmap_factor;
+	vec3 global_albedo = texture(u_terrain_globalmap, UV).rgb;
+	ALBEDO = global_albedo;
+
+	float convex = 0.0;
+	float concave = 0.0;
+	if (u_use_curvature) {
+		vec2 texel = vec2(1.0) / vec2(textureSize(u_terrain_heightmap, 0));
+		float h_c = sample_heightmap(u_terrain_heightmap, UV);
+		float h_l = sample_heightmap(u_terrain_heightmap, UV - vec2(texel.x, 0.0));
+		float h_r = sample_heightmap(u_terrain_heightmap, UV + vec2(texel.x, 0.0));
+		float h_u = sample_heightmap(u_terrain_heightmap, UV - vec2(0.0, texel.y));
+		float h_d = sample_heightmap(u_terrain_heightmap, UV + vec2(0.0, texel.y));
+		float laplacian = (h_l + h_r + h_u + h_d - 4.0 * h_c) * u_curvature_scale;
+		concave = clamp(laplacian, 0.0, 1.0);
+		convex = clamp(-laplacian, 0.0, 1.0);
+	}
+
+	if (globalmap_factor < 1.0) {
+		vec4 tex_splat_indexes = texture(u_terrain_splat_index_map, UV);
+		vec4 tex_splat_weights = texture(u_terrain_splat_weight_map, UV);
+
+		vec3 splat_indexes = tex_splat_indexes.rgb * 255.0;
+		vec3 splat_weights = vec3(
+			tex_splat_weights.r,
+			tex_splat_weights.g,
+			1.0 - tex_splat_weights.r - tex_splat_weights.g
+		);
+
+		float slope = 1.0 - clamp(terrain_normal_world.y, 0.0, 1.0);
+		bool do_triplanar = u_use_triplanar && slope > u_triplanar_slope_threshold;
+		vec3 tri_blend = vec3(0.0, 1.0, 0.0);
+		if (do_triplanar) {
+			vec3 b = pow(abs(terrain_normal_world), vec3(u_triplanar_sharpness));
+			tri_blend = b / (b.x + b.y + b.z);
+		}
+
+		vec2 ground_uv_final = v_ground_uv;
+		if (u_use_texture_bombing) {
+			ground_uv_final = apply_texture_bombing(v_ground_uv, u_bombing_cell_size, u_bombing_offset_strength);
+		}
+
+		vec4 ab0; vec4 ab1; vec4 ab2;
+		vec4 nr0; vec4 nr1; vec4 nr2;
+
+		if (do_triplanar) {
+			ab0 = sample_albedo_bump_triplanar(splat_indexes.x, tri_blend);
+			ab1 = sample_albedo_bump_triplanar(splat_indexes.y, tri_blend);
+			ab2 = sample_albedo_bump_triplanar(splat_indexes.z, tri_blend);
+
+			nr0 = sample_normal_roughness_triplanar(splat_indexes.x, tri_blend);
+			nr1 = sample_normal_roughness_triplanar(splat_indexes.y, tri_blend);
+			nr2 = sample_normal_roughness_triplanar(splat_indexes.z, tri_blend);
+		} else {
+			ab0 = texture(u_ground_albedo_bump_array, vec3(ground_uv_final, splat_indexes.x));
+			ab1 = texture(u_ground_albedo_bump_array, vec3(ground_uv_final, splat_indexes.y));
+			ab2 = texture(u_ground_albedo_bump_array, vec3(ground_uv_final, splat_indexes.z));
+
+			nr0 = texture(u_ground_normal_roughness_array, vec3(ground_uv_final, splat_indexes.x));
+			nr1 = texture(u_ground_normal_roughness_array, vec3(ground_uv_final, splat_indexes.y));
+			nr2 = texture(u_ground_normal_roughness_array, vec3(ground_uv_final, splat_indexes.z));
+		}
+
+		if (u_depth_blending) {
+			splat_weights = get_depth_blended_weights(
+				splat_weights,
+				vec3(ab0.a, ab1.a, ab2.a),
+				u_height_blend_strength
+			);
+		}
+
+		vec3 albedo_out = v_tint * (
+			  ab0.rgb * splat_weights.x
+			+ ab1.rgb * splat_weights.y
+			+ ab2.rgb * splat_weights.z
+		);
+
+		if (u_macro_strength > 0.0) {
+			vec3 macro1 = texture(u_macro_variation_texture, v_macro_uv).rgb;
+			vec3 macro2 = texture(u_macro_variation_texture, v_macro_uv2).rgb;
+			vec3 macro_combined = mix(macro1, macro1 * macro2, u_macro_octave2_strength) * u_macro_tint;
+			albedo_out = mix(albedo_out, albedo_out * macro_combined, u_macro_strength);
+		}
+
+		if (u_detail_strength > 0.0) {
+			float detail_fade = 1.0 - clamp(v_distance_to_camera / u_detail_fade_distance, 0.0, 1.0);
+			if (detail_fade > 0.0) {
+				vec3 detail = texture(u_detail_albedo_texture, v_detail_uv).rgb;
+				albedo_out = mix(albedo_out, albedo_out * detail * 2.0, u_detail_strength * detail_fade);
+			}
+		}
+
+		float roughness_blend =
+			  nr0.a * splat_weights.x
+			+ nr1.a * splat_weights.y
+			+ nr2.a * splat_weights.z;
+
+		roughness_out = pow(
+			clamp(roughness_blend * u_roughness_multiplier, u_minimum_roughness, 1.0),
+			u_roughness_power
+		);
+
+		if (u_use_ao_array) {
+			float ao0 = texture(u_ground_ao_array, vec3(ground_uv_final, splat_indexes.x)).r;
+			float ao1 = texture(u_ground_ao_array, vec3(ground_uv_final, splat_indexes.y)).r;
+			float ao2 = texture(u_ground_ao_array, vec3(ground_uv_final, splat_indexes.z)).r;
+			float ao_blend = ao0 * splat_weights.x + ao1 * splat_weights.y + ao2 * splat_weights.z;
+			ao = mix(1.0, ao_blend, u_ao_strength);
+		}
+
+		vec3 normal0 = apply_normal_strength(unpack_normal(nr0), get_layer_normal_strength(splat_indexes.x));
+		vec3 normal1 = apply_normal_strength(unpack_normal(nr1), get_layer_normal_strength(splat_indexes.y));
+		vec3 normal2 = apply_normal_strength(unpack_normal(nr2), get_layer_normal_strength(splat_indexes.z));
+
+		vec3 ground_normal =
+			  normal0 * splat_weights.x
+			+ normal1 * splat_weights.y
+			+ normal2 * splat_weights.z;
+
+		normal = blend_whiteout(terrain_normal_world, ground_normal);
+
+		if (u_use_auto_snow) {
+			float height_factor = smoothstep(u_snow_height_start, u_snow_height_end, v_world_height);
+			float slope_factor = 1.0 - smoothstep(u_snow_max_slope, 1.0, slope);
+			float snow_amount = clamp(height_factor * slope_factor * u_auto_snow_strength, 0.0, 1.0);
+			if (snow_amount > 0.0) {
+				vec4 snow_ab = texture(u_ground_albedo_bump_array, vec3(ground_uv_final, float(u_snow_layer_index)));
+				vec4 snow_nr = texture(u_ground_normal_roughness_array, vec3(ground_uv_final, float(u_snow_layer_index)));
+				albedo_out = mix(albedo_out, v_tint * snow_ab.rgb, snow_amount);
+				roughness_out = mix(roughness_out, snow_nr.a * u_roughness_multiplier, snow_amount);
+				vec3 snow_normal = apply_normal_strength(unpack_normal(snow_nr), u_normal_strength);
+				normal = mix(normal, blend_whiteout(terrain_normal_world, snow_normal), snow_amount);
+			}
+		}
+
+		if (u_use_auto_rock) {
+			float rock_amount = clamp(
+				smoothstep(u_rock_slope_start, u_rock_slope_end, slope) * u_auto_rock_strength, 0.0, 1.0);
+			if (rock_amount > 0.0) {
+				vec4 rock_ab = texture(u_ground_albedo_bump_array, vec3(ground_uv_final, float(u_rock_layer_index)));
+				vec4 rock_nr = texture(u_ground_normal_roughness_array, vec3(ground_uv_final, float(u_rock_layer_index)));
+				albedo_out = mix(albedo_out, v_tint * rock_ab.rgb, rock_amount);
+				roughness_out = mix(roughness_out, rock_nr.a * u_roughness_multiplier, rock_amount);
+				vec3 rock_normal = apply_normal_strength(unpack_normal(rock_nr), u_normal_strength);
+				normal = mix(normal, blend_whiteout(terrain_normal_world, rock_normal), rock_amount);
+			}
+		}
+
+		ALBEDO = albedo_out;
+
+		normal = mix(normal, terrain_normal_world, globalmap_factor);
+		ALBEDO = mix(ALBEDO, global_albedo, globalmap_factor);
+		roughness_out = mix(roughness_out, 1.0, globalmap_factor);
+		ao = mix(ao, 1.0, globalmap_factor);
+	}
+
+	if (u_use_curvature) {
+		ALBEDO *= mix(1.0, 1.0 + u_convex_brighten, convex);
+		ALBEDO *= mix(1.0, 1.0 - u_concave_darken, concave);
+		ao = mix(ao, ao * (1.0 - u_concave_darken * 0.5), concave);
+	}
+
+	if (u_wetness > 0.0) {
+		ALBEDO *= mix(1.0, 0.6, u_wetness);
+		roughness_out = mix(roughness_out, 0.05, u_wetness);
+	}
+
+	ROUGHNESS = roughness_out;
+	METALLIC = u_metallic;
+	SPECULAR = u_specular;
+	AO = ao;
+	AO_LIGHT_AFFECT = u_ao_strength;
+
+	NORMAL = (VIEW_MATRIX * vec4(normal, 0.0)).xyz;
+}
+"
+
+[sub_resource type="Shader" id="Shader_uty7l"]
+code = "shader_type spatial;
+
+// This is the reference shader of the plugin, and has the most features.
+// it should be preferred for high-end graphics cards.
+// For less features but lower-end targets, see the lite version.
+
+// TODO Figure out why sampling colormap or splatmap in vertex shader leads to artifacts.
+// At extremely shallow angles (such as horizon), some pixels start to flash.
+// It appears to be caused by interpolation between the vertex and fragment shaders, leading to
+// color values going largely outside of 0..1.
+// See https://github.com/Zylann/godot_heightmap_plugin/issues/469
+//#define COLORMAP_PER_VERTEX
+//#define SPLATMAP_PER_VERTEX
+
+#include \"res://addons/zylann.hterrain/shaders/include/heightmap.gdshaderinc\"
+
+uniform sampler2D u_terrain_heightmap;
+uniform sampler2D u_terrain_normalmap;
+// I had to remove `hint_albedo` from colormap in Godot 3 because it makes sRGB conversion kick in,
+// which snowballs to black when doing GPU painting on that texture...
+uniform sampler2D u_terrain_colormap;
+uniform sampler2D u_terrain_splatmap;
+uniform sampler2D u_terrain_globalmap : source_color;
+uniform mat4 u_terrain_inverse_transform;
+uniform mat3 u_terrain_normal_basis;
+
+// the reason bump is preferred with albedo is, roughness looks better with normal maps.
+// If we want no normal mapping, roughness would only give flat mirror surfaces,
+// while bump still allows to do depth-blending for free.
+uniform sampler2D u_ground_albedo_bump_0 : source_color;
+uniform sampler2D u_ground_albedo_bump_1 : source_color;
+uniform sampler2D u_ground_albedo_bump_2 : source_color;
+uniform sampler2D u_ground_albedo_bump_3 : source_color;
+
+uniform sampler2D u_ground_normal_roughness_0;
+uniform sampler2D u_ground_normal_roughness_1;
+uniform sampler2D u_ground_normal_roughness_2;
+uniform sampler2D u_ground_normal_roughness_3;
+
+// Had to give this uniform a suffix, because it's declared as a simple float
+// in other shaders, and its type cannot be inferred by the plugin.
+// See https://github.com/godotengine/godot/issues/24488
+uniform vec4 u_ground_uv_scale_per_texture = vec4(20.0, 20.0, 20.0, 20.0);
+
+uniform bool u_depth_blending = true;
+uniform bool u_triplanar = false;
+// Each component corresponds to a ground texture. Set greater than zero to enable.
+uniform vec4 u_tile_reduction = vec4(0.0, 0.0, 0.0, 0.0);
+
+uniform float u_globalmap_blend_start;
+uniform float u_globalmap_blend_distance;
+
+uniform vec4 u_colormap_opacity_per_texture = vec4(1.0, 1.0, 1.0, 1.0);
+
+uniform float u_specular = 0.5;
+
+#ifdef COLORMAP_PER_VERTEX
+varying float v_hole;
+varying vec3 v_tint0;
+varying vec3 v_tint1;
+varying vec3 v_tint2;
+varying vec3 v_tint3;
+#endif
+#ifdef SPLATMAP_PER_VERTEX
+varying vec4 v_splat;
+#endif
+varying vec2 v_ground_uv0;
+varying vec2 v_ground_uv1;
+varying vec2 v_ground_uv2;
+varying vec3 v_ground_uv3;
+varying float v_distance_to_camera;
+
+
+vec3 unpack_normal(vec4 rgba) {
+	vec3 n = rgba.xzy * 2.0 - vec3(1.0);
+	// Had to negate Z because it comes from Y in the normal map,
+	// and OpenGL-style normal maps are Y-up.
+	n.z *= -1.0;
+	return n;
+}
+
+vec4 pack_normal(vec3 n, float a) {
+	n.z *= -1.0;
+	return vec4((n.xzy + vec3(1.0)) * 0.5, a);
+}
+
+// Blends weights according to the bump of detail textures,
+// so for example it allows to have sand fill the gaps between pebbles
+vec4 get_depth_blended_weights(vec4 splat, vec4 bumps) {
+	float dh = 0.2;
+
+	vec4 h = bumps + splat;
+
+	// TODO Keep improving multilayer blending, there are still some edge cases...
+	// Mitigation: nullify layers with near-zero splat
+	h *= smoothstep(0, 0.05, splat);
+
+	vec4 d = h + dh;
+	d.r -= max(h.g, max(h.b, h.a));
+	d.g -= max(h.r, max(h.b, h.a));
+	d.b -= max(h.g, max(h.r, h.a));
+	d.a -= max(h.g, max(h.b, h.r));
+
+	return clamp(d, 0, 1);
+}
+
+vec3 get_triplanar_blend(vec3 world_normal) {
+	vec3 blending = abs(world_normal);
+	blending = normalize(max(blending, vec3(0.00001))); // Force weights to sum to 1.0
+	float b = blending.x + blending.y + blending.z;
+	return blending / vec3(b, b, b);
+}
+
+vec4 texture_triplanar(sampler2D tex, vec3 world_pos, vec3 blend) {
+	vec4 xaxis = texture(tex, world_pos.yz);
+	vec4 yaxis = texture(tex, world_pos.xz);
+	vec4 zaxis = texture(tex, world_pos.xy);
+	// blend the results of the 3 planar projections.
+	return xaxis * blend.x + yaxis * blend.y + zaxis * blend.z;
+}
+
+vec4 depth_blend2(vec4 a_value, float a_bump, vec4 b_value, float b_bump, float t) {
+	// https://www.gamasutra.com
+	// /blogs/AndreyMishkinis/20130716/196339/Advanced_Terrain_Texture_Splatting.php
+	float d = 0.1;
+	float ma = max(a_bump + (1.0 - t), b_bump + t) - d;
+	float ba = max(a_bump + (1.0 - t) - ma, 0.0);
+	float bb = max(b_bump + t - ma, 0.0);
+	return (a_value * ba + b_value * bb) / (ba + bb);
+}
+
+vec2 rotate(vec2 v, float cosa, float sina) {
+	return vec2(cosa * v.x - sina * v.y, sina * v.x + cosa * v.y);
+}
+
+vec4 texture_antitile(sampler2D albedo_tex, sampler2D normal_tex, vec2 uv, out vec4 out_normal) {
+	float frequency = 2.0;
+	float scale = 1.3;
+	float sharpness = 0.7;
+
+	// Rotate and scale UV
+	float rot = 3.14 * 0.6;
+	float cosa = cos(rot);
+	float sina = sin(rot);
+	vec2 uv2 = rotate(uv, cosa, sina) * scale;
+
+	vec4 col0 = texture(albedo_tex, uv);
+	vec4 col1 = texture(albedo_tex, uv2);
+	vec4 nrm0 = texture(normal_tex, uv);
+	vec4 nrm1 = texture(normal_tex, uv2);
+	//col0 = vec4(0.0, 0.5, 0.5, 1.0); // Highlights variations
+
+	// Normals have to be rotated too since we are rotating the texture...
+	// TODO Probably not the most efficient but understandable for now
+	vec3 n = unpack_normal(nrm1);
+	// Had to negate the Y axis for some reason. I never remember the myriad of conventions around
+	n.xz = rotate(n.xz, cosa, -sina);
+	nrm1 = pack_normal(n, nrm1.a);
+
+	// Periodically alternate between the two versions using a warped checker pattern
+	float t = 1.2 +
+		  sin(uv2.x * frequency + sin(uv.x) * 2.0)
+		* cos(uv2.y * frequency + sin(uv.y) * 2.0); // Result in [0..2]
+	t = smoothstep(sharpness, 2.0 - sharpness, t);
+
+	// Using depth blend because classic alpha blending smoothes out details.
+	out_normal = depth_blend2(nrm0, col0.a, nrm1, col1.a, t);
+	return depth_blend2(col0, col0.a, col1, col1.a, t);
+}
+
+void vertex() {
+	vec4 wpos = MODEL_MATRIX * vec4(VERTEX, 1);
+	vec2 cell_coords = (u_terrain_inverse_transform * wpos).xz;
+	// Must add a half-offset so that we sample the center of pixels,
+	// otherwise bilinear filtering of the textures will give us mixed results (#183)
+	cell_coords += vec2(0.5);
+
+	// Normalized UV
+	UV = cell_coords / vec2(textureSize(u_terrain_heightmap, 0));
+
+	// Height displacement
+	float h = sample_heightmap(u_terrain_heightmap, UV);
+	VERTEX.y = h;
+	wpos.y = h;
+
+	vec3 base_ground_uv = vec3(cell_coords.x, h * MODEL_MATRIX[1][1], cell_coords.y);
+	v_ground_uv0 = base_ground_uv.xz / u_ground_uv_scale_per_texture.x;
+	v_ground_uv1 = base_ground_uv.xz / u_ground_uv_scale_per_texture.y;
+	v_ground_uv2 = base_ground_uv.xz / u_ground_uv_scale_per_texture.z;
+	v_ground_uv3 = base_ground_uv / u_ground_uv_scale_per_texture.w;
+
+#ifdef COLORMAP_PER_VERTEX
+	// Putting this in vertex saves 2 fetches from the fragment shader,
+	// which is good for performance at a negligible quality cost,
+	// provided that geometry is a regular grid that decimates with LOD.
+	// (downside is LOD will also decimate tint and splat, but it's not bad overall)
+	vec4 tint = texture(u_terrain_colormap, UV);
+	v_hole = tint.a;
+	v_tint0 = mix(vec3(1.0), tint.rgb, u_colormap_opacity_per_texture.x);
+	v_tint1 = mix(vec3(1.0), tint.rgb, u_colormap_opacity_per_texture.y);
+	v_tint2 = mix(vec3(1.0), tint.rgb, u_colormap_opacity_per_texture.z);
+	v_tint3 = mix(vec3(1.0), tint.rgb, u_colormap_opacity_per_texture.w);
+#endif
+#ifdef SPLATMAP_PER_VERTEX
+	v_splat = texture(u_terrain_splatmap, UV);
+#endif
+
+	// Need to use u_terrain_normal_basis to handle scaling.
+	NORMAL = u_terrain_normal_basis * unpack_normal(texture(u_terrain_normalmap, UV));
+
+	v_distance_to_camera = distance(wpos.xyz, CAMERA_POSITION_WORLD);
+}
+
+void fragment() {
+#ifndef COLORMAP_PER_VERTEX
+	vec4 tint = texture(u_terrain_colormap, UV);
+	float v_hole = tint.a;
+	vec3 v_tint0 = mix(vec3(1.0), tint.rgb, u_colormap_opacity_per_texture.x);
+	vec3 v_tint1 = mix(vec3(1.0), tint.rgb, u_colormap_opacity_per_texture.y);
+	vec3 v_tint2 = mix(vec3(1.0), tint.rgb, u_colormap_opacity_per_texture.z);
+	vec3 v_tint3 = mix(vec3(1.0), tint.rgb, u_colormap_opacity_per_texture.w);
+#endif
+
+	if (v_hole < 0.5) {
+		// TODO Add option to use vertex discarding instead, using NaNs
+		discard;
+	}
+
+#ifndef SPLATMAP_PER_VERTEX
+	vec4 v_splat = texture(u_terrain_splatmap, UV);
+#endif
+
+	vec3 terrain_normal_world =
+		u_terrain_normal_basis * unpack_normal(texture(u_terrain_normalmap, UV));
+	terrain_normal_world = normalize(terrain_normal_world);
+	vec3 normal = terrain_normal_world;
+
+	float globalmap_factor = clamp((v_distance_to_camera - u_globalmap_blend_start)
+		* u_globalmap_blend_distance, 0.0, 1.0);
+	globalmap_factor *= globalmap_factor; // slower start, faster transition but far away
+	vec3 global_albedo = texture(u_terrain_globalmap, UV).rgb;
+	ALBEDO = global_albedo;
+
+	// Doing this branch allows to spare a bunch of texture fetches for distant pixels.
+	// Eventually, there could be a split between near and far shaders in the future,
+	// if relevant on high-end GPUs
+	if (globalmap_factor < 1.0) {
+		vec4 ab0, ab1, ab2, ab3;
+		vec4 nr0, nr1, nr2, nr3;
+
+		if (u_triplanar) {
+			// Only do triplanar on one texture slot,
+			// because otherwise it would be very expensive and cost many more ifs.
+			// I chose the last slot because first slot is the default on new splatmaps,
+			// and that's a feature used for cliffs, which are usually designed later.
+
+			vec3 blending = get_triplanar_blend(terrain_normal_world);
+
+			ab3 = texture_triplanar(u_ground_albedo_bump_3, v_ground_uv3, blending);
+			nr3 = texture_triplanar(u_ground_normal_roughness_3, v_ground_uv3, blending);
+
+		} else {
+			if (u_tile_reduction[3] > 0.0) {
+				ab3 = texture_antitile(
+					u_ground_albedo_bump_3, u_ground_normal_roughness_3, v_ground_uv3.xz, nr3);
+			} else {
+				ab3 = texture(u_ground_albedo_bump_3, v_ground_uv3.xz);
+				nr3 = texture(u_ground_normal_roughness_3, v_ground_uv3.xz);
+			}
+		}
+
+		if (u_tile_reduction[0] > 0.0) {
+			ab0 = texture_antitile(
+				u_ground_albedo_bump_0, u_ground_normal_roughness_0, v_ground_uv0, nr0);
+		} else {
+			ab0 = texture(u_ground_albedo_bump_0, v_ground_uv0);
+			nr0 = texture(u_ground_normal_roughness_0, v_ground_uv0);
+		}
+		if (u_tile_reduction[1] > 0.0) {
+			ab1 = texture_antitile(
+				u_ground_albedo_bump_1, u_ground_normal_roughness_1, v_ground_uv1, nr1);
+		} else {
+			ab1 = texture(u_ground_albedo_bump_1, v_ground_uv1);
+			nr1 = texture(u_ground_normal_roughness_1, v_ground_uv1);
+		}
+		if (u_tile_reduction[2] > 0.0) {
+			ab2 = texture_antitile(
+				u_ground_albedo_bump_2, u_ground_normal_roughness_2, v_ground_uv2, nr2);
+		} else {
+			ab2 = texture(u_ground_albedo_bump_2, v_ground_uv2);
+			nr2 = texture(u_ground_normal_roughness_2, v_ground_uv2);
+		}
+
+		vec3 col0 = ab0.rgb * v_tint0;
+		vec3 col1 = ab1.rgb * v_tint1;
+		vec3 col2 = ab2.rgb * v_tint2;
+		vec3 col3 = ab3.rgb * v_tint3;
+
+		vec4 rough = vec4(nr0.a, nr1.a, nr2.a, nr3.a);
+
+		vec3 normal0 = unpack_normal(nr0);
+		vec3 normal1 = unpack_normal(nr1);
+		vec3 normal2 = unpack_normal(nr2);
+		vec3 normal3 = unpack_normal(nr3);
+
+		vec4 w;
+		// TODO An #ifdef macro would be nice! Or copy/paste everything in a different shader...
+		if (u_depth_blending) {
+			w = get_depth_blended_weights(v_splat, vec4(ab0.a, ab1.a, ab2.a, ab3.a));
+		} else {
+			w = v_splat.rgba;
+		}
+
+		float w_sum = (w.r + w.g + w.b + w.a);
+
+		ALBEDO = (
+			w.r * col0.rgb +
+			w.g * col1.rgb +
+			w.b * col2.rgb +
+			w.a * col3.rgb) / w_sum;
+
+		ROUGHNESS = (
+			w.r * rough.r +
+			w.g * rough.g +
+			w.b * rough.b +
+			w.a * rough.a) / w_sum;
+
+		vec3 ground_normal = /*u_terrain_normal_basis **/ (
+			w.r * normal0 +
+			w.g * normal1 +
+			w.b * normal2 +
+			w.a * normal3) / w_sum;
+		// If no splat textures are defined, normal vectors will default to (1,1,1),
+		// which is incorrect, and causes the terrain to be shaded wrongly in some directions.
+		// However, this should not be a problem to fix in the shader,
+		// because there MUST be at least one splat texture set.
+		//ground_normal = normalize(ground_normal);
+		// TODO Make the plugin insert a default normalmap if it's empty
+
+		// Combine terrain normals with detail normals (not sure if correct but looks ok)
+		normal = normalize(vec3(
+			terrain_normal_world.x + ground_normal.x,
+			terrain_normal_world.y,
+			terrain_normal_world.z + ground_normal.z));
+
+		normal = mix(normal, terrain_normal_world, globalmap_factor);
+
+		ALBEDO = mix(ALBEDO, global_albedo, globalmap_factor);
+		ROUGHNESS = mix(ROUGHNESS, 1.0, globalmap_factor);
+
+		// Show splatmap weights
+		//ALBEDO = w.rgb;
+	}
+	// Highlight all pixels undergoing no splatmap at all
+//	else {
+//		ALBEDO = vec3(1.0, 0.0, 0.0);
+//	}
+
+	NORMAL = (VIEW_MATRIX * (vec4(normal, 0.0))).xyz;
+	SPECULAR = u_specular;
+}
+"
+
+[sub_resource type="Resource" id="Resource_xpeyw"]
+script = ExtResource("3_mhym6")
+mode = 0
+textures = [[ExtResource("4_a3se8"), ExtResource("5_uty7l"), ExtResource("6_45l4g"), ExtResource("7_4uo0j"), ExtResource("8_vxl6d")], [ExtResource("9_eski5"), ExtResource("10_pdf00"), ExtResource("11_a6gra"), ExtResource("12_dwqlq"), ExtResource("13_15c7i")]]
+
+[node name="Node3D" type="Node3D" unique_id=1142573535]
+
+[node name="HTerrain" type="Node3D" parent="." unique_id=761820042]
+script = ExtResource("1_0m0f1")
+_terrain_data = ExtResource("2_b0q6j")
+chunk_size = 32
+collision_enabled = true
+collision_layer = 1
+collision_mask = 1
+physics_material = null
+shader_type = "Classic4"
+custom_shader = SubResource("Shader_n1wee")
+custom_globalmap_shader = SubResource("Shader_uty7l")
+texture_set = SubResource("Resource_xpeyw")
+render_layers = 1
+cast_shadow = 1
+shader_params/u_ground_uv_scale_per_texture = Vector4(20, 20, 20, 20)
+shader_params/u_depth_blending = true
+shader_params/u_triplanar = false
+shader_params/u_tile_reduction = Vector4(0, 0, 0, 0)
+shader_params/u_globalmap_blend_start = 0.0
+shader_params/u_globalmap_blend_distance = 0.0
+shader_params/u_colormap_opacity_per_texture = Vector4(1, 1, 1, 1)
+shader_params/u_specular = -0.2
+metadata/_custom_type_script = "uid://dxmrk0ofrri1k"

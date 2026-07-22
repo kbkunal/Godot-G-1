@@ -1,0 +1,11 @@
+Model Information:
+* title:	RDR 2 Sheriff
+* source:	https://sketchfab.com/3d-models/rdr-2-sheriff-a40f52c473934d6496d62a40fa21407f
+* author:	kozachoks (https://sketchfab.com/kozachoks)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "RDR 2 Sheriff" (https://sketchfab.com/3d-models/rdr-2-sheriff-a40f52c473934d6496d62a40fa21407f) by kozachoks (https://sketchfab.com/kozachoks) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
