@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dxffurija422x"]
+
+[ext_resource type="PackedScene" uid="uid://dgt41sa60tpqn" path="res://L1 - Copy/tree-billboard-test/source/TreeCutTest/TreeCutTest.fbx" id="1_ouao0"]
+[ext_resource type="Texture2D" uid="uid://07a2nr0lyshh" path="res://L1 - Copy/tree-billboard-test/textures/TreeCut1.png" id="2_eufdv"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_anjf1"]
+transparency = 2
+alpha_scissor_threshold = 0.5
+alpha_antialiasing_mode = 0
+albedo_color = Color(0.99999994, 0.9051956, 0.45752996, 1)
+albedo_texture = ExtResource("2_eufdv")
+billboard_mode = 1
+
+[node name="TreeCutTest" unique_id=340062414 instance=ExtResource("1_ouao0")]
+
+[node name="TreeCut" parent="." index="0" unique_id=504914888]
+surface_material_override/0 = SubResource("StandardMaterial3D_anjf1")
